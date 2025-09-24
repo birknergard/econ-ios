@@ -7,8 +7,8 @@ class Income: Identifiable {
     public var name: String
     public var amount: Double
     
-    init(id: UUID, name: String, amount: Double) {
-        self.id = id
+    init(name: String, amount: Double) {
+        self.id = UUID()
         self.name = name
         self.amount = amount
     }

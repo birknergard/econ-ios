@@ -9,6 +9,9 @@ import SwiftUI
 
 struct IncomesView: View {
     var body: some View {
-        Text("Body")
+        VStack {
+            Text("Body")
+        }
+        .background(Color.background)
     }
 }

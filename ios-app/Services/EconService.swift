@@ -1,3 +1,4 @@
+/*
 import Foundation
 
 enum NetworkError: Error {
@@ -53,3 +54,4 @@ struct EconService {
         }
     }
 }
+*/

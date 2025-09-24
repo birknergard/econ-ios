@@ -1,35 +1,40 @@
-internal import Combine
-import Foundation
+import SwiftData
+import Combine
 
 class EconStore: ObservableObject {
-    let service: EconService = EconService()
-
-    @Published var expenses: [Expense]
-    @Published var incomes: [Income]
+    /* Service object, not in use right now */
+    // let service: EconService = EconService()
     
     let categories: [String] = [
-        "Housing", "Food", "Transport", "Other", "Savings", "Debt",
+        "housing", "food", "transport", "other", "savings", "debt"
     ]
 
-    func createExpense(expense: Expense) async {
-        do {
-            try await self.service.createExpense(expense: expense)
-        } catch {
-           print("Failed to create expense")
+    func mapExpensesToCategory(expenses: [Expense]) -> [String : [Expense]]{
+        var map: [String : [Expense]] = [:]
+        
+        for expense in expenses {
+            let category = expense.category
+            
+            // Ignore invalid expense categories, checked against constant
+            if !self.categories.contains(category) { continue }
+            
+            if map[category] == nil {
+                map[category] = [expense]
+                continue
+            }
+            
+            map[category]?.append(expense)
         }
+        return map
     }
     
-    func fetchExpenses() async -> [Expense] {
+    func addExpense(expense: Expense, modelContext: ModelContext) -> Bool {
         do {
-            return try await self.service.getAllExpenses()
-        } catch {
-            print("Failed to fetch expenses")
-            return [Expense]()
+            modelContext.insert(expense)
+            try modelContext.save()
+            return true
+        }  catch {
+            return false
         }
-    }
-    
-    init() {
-        self.expenses = [Expense]()
-        self.incomes = [Income]()
     }
 }

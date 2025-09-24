@@ -5,16 +5,17 @@
 //  Created by Birk Kristinius Nergård on 22/09/2025.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 @main
-struct ios_appApp: App {
-    @StateObject private var store = EconStore()
-    
+struct EconApp: App {
+    @StateObject private var store: EconStore = EconStore()
+
     var body: some Scene {
         WindowGroup {
-            ContentView().environmentObject(store)
+            ContentView()
+                .environmentObject(store)
         }.modelContainer(for: [Expense.self, Income.self])
     }
 }

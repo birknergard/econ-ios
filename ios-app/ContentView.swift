@@ -33,11 +33,7 @@ struct ContentView: View {
                 Text("Incomes")
                 Image(systemName: "plus.square")
             }
-
         }
+        .tint(.accentGreen)
     }
-}
-
-#Preview {
-    ContentView()
 }

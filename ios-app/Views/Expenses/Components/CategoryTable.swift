@@ -13,27 +13,25 @@ struct CategoryTable: View {
     var borderColor: Color = .gray
     var categoryTotal: Double = 0  // Test value
 
+    @State var isListView: Bool = false;
+    
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text("\(title)").font(.title2)
-                
-                if items.isEmpty || categoryTotal <= 0 {
-                    Text("Category is empty.").font(.caption)
-                } else {
-                    Text("Contains \(items.count) entries.")
-                }
+                Text("\(title)").font(.title)
+
+                (items.isEmpty || categoryTotal <= 0
+                    ? Text("Category is empty.")
+                    : Text("Contains \(items.count) entries."))
+                    .font(.caption)
             }
 
             Spacer()
 
-            if items.isEmpty {
-                Text("0,-").font(.title)
-            } else {
-                Text("\(String(format: "%.2f", categoryTotal)),-").font(
-                    .title.bold()
-                )
-            }
+            (items.isEmpty
+                ? Text("0,-")
+                : Text(String(format: "%d,-", categoryTotal)))
+                .font(.title)
 
             Button(action: {
                 // Modal active/deactivate
@@ -41,20 +39,23 @@ struct CategoryTable: View {
                 Image(systemName: "chevron.down")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 30, height: 30)
-                    .padding(.leading, 20)
-                    .padding(.trailing, 10)
+                    .frame(width: 15, height: 15)
+                    .padding(.leading, 10)
             }
             .buttonStyle(.plain)
 
         }
         .font(.title2)
-        .padding([.top, .bottom], 30)
         .padding([.leading, .trailing], 20)
-        .foregroundColor(.black)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding([.bottom, .top], 50)
+        .foregroundColor(.white)
+        .background(Color.accentRed)
         .cornerRadius(8)
-        .border(borderColor, width: 5)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding([.leading, .trailing], 10)
+        .onTapGesture {
+            isListView.toggle()
+        }
     }
 }
 

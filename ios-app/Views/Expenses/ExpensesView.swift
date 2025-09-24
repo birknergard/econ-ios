@@ -6,72 +6,72 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ExpensesView: View {
-    @EnvironmentObject var store: EconStore
+    @Environment(\.modelContext) var context
+    @Query var expenses: [Expense]
     
-    @State var sum: Int = 0  // Test value
+    private var sum: Double {
+        expenses.reduce(0.0) {$0 + $1.cost}
+    }
+    
     @State var creating: Bool = false
 
     var body: some View {
-        VStack {
+        VStack (spacing: 0){
             VStack {
-                Text("SUM (Monthly)")
-                    .font(.system(size: 25))
+                Text("Monthly sum of expenses")
+                    .font(.subheadline)
                 HStack {
                     Image(systemName: "minus")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 30, height: 30)
-                    Text("\(sum),-")
+                    Text(String(format: "%d,-", sum))
                         .font(.system(size: 50))
                 }
-                .foregroundColor(.red)
-                Spacer()
-                    .frame(height: 20)
+                .foregroundColor(.accentRed)
             }
             .frame(maxWidth: .infinity)
-            .overlay(  // Bottom border
+            .padding(.bottom, 15)
+            .overlay(
                 Rectangle()
                     .frame(height: 2)
-                    .foregroundColor(.gray),
+                    .foregroundColor(.textDark),
                 alignment: .bottom
             )
 
             ZStack(alignment: .bottomTrailing) {
+                CategoryList(expenses: expenses)
                 
-                NavigationLink(destination: CreateExpenseView()) {
+                // Add new
+                NavigationLink(destination: Creator(context: context)) {
                     Image(systemName: "document.badge.plus")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 40, height: 40)
-                        .background(Circle().fill(.white))
+                        .background(Circle().fill(Color.background))
                         .foregroundColor(.red)
                 }
-                .padding()
                 .buttonStyle(.plain)
                 .background(
                     Circle()
-                        .fill(.white)
+                        .fill(Color.background)
                         .frame(width: 65, height: 65)
                         .shadow(color: .gray.opacity(0.5), radius: 5)
                 )
-                .padding([.trailing, .bottom], 15)
+                .padding(30)
             }
             .frame(
                 maxWidth: .infinity,
                 maxHeight: .infinity,
             )
-            .padding([.leading, .bottom, .trailing], 10)
         }
         .frame(
             maxWidth: .infinity,
             alignment: .top
         )
-        .padding(.top, 50)
+        .background(Color.background)
     }
-}
-
-#Preview {
-    ExpensesView()
 }

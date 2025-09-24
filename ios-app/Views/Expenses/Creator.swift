@@ -8,18 +8,26 @@
 import SwiftData
 import SwiftUI
 
-struct CreateExpenseView: View {
-
+struct Creator: View {
     @EnvironmentObject var store: EconStore
     @Environment(\.presentationMode) var presentationMode
+    var context: ModelContext
+    
+    init(context: ModelContext){
+        self.context = context
+    }
 
-    // For POST
     @State var name: String = ""
     @State var cost: Double = 0.00
-    @State var category: String = ""
+    @State var category: String = "housing"
+    @State var createdMessage: String?
 
+    func reset(){
+        name = "";
+        cost = 0;
+    }
+    
     var body: some View {
-        // For POST
         VStack {
             Form {
                 Section(header: Text("Name")) {
@@ -54,15 +62,20 @@ struct CreateExpenseView: View {
                 Section {
                     HStack(alignment: .center) {
                         Button(action: {
-                            Task {
-                                await store.createExpense(expense: Expense(
-                                    id: "ios-test",
-                                    name: name,
-                                    cost: cost,
-                                    category: category.lowercased()
-                                ))
+                            let new = Expense(
+                                name: name,
+                                cost: cost,
+                                category: category
+                            )
+                            context.insert(new)
+                            do {
+                                try context.save()
+                                createdMessage = "Successfully created expense on category \(category)!"
+                                reset()
+                            } catch {
+                                createdMessage = "Failed to create expense!"
                             }
-                            presentationMode.wrappedValue.dismiss()
+                            
                         }) {
                             HStack {
                                 Image(systemName: "plus.square.dashed")
@@ -72,21 +85,6 @@ struct CreateExpenseView: View {
                                 Text("CREATE")
                             }
                         }
-
-                        /*
-                        Spacer()
-
-                        Button(action: {
-                        }) {
-                            HStack {
-                                Image(systemName: "xmark.bin")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 30, height: 30)
-                                Text("CANCEL")
-                            }
-                        }
-                         */
                     }
                     .frame(maxWidth: .infinity)
                     .foregroundColor(.red)
@@ -95,10 +93,11 @@ struct CreateExpenseView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .navigationTitle("Create new expense")
+            
+            if let message = createdMessage {
+                Text(message)
+                    .foregroundColor(message.contains("Failed") ? .red : .green)
+            }
         }
     }
-}
-
-#Preview {
-    CreateExpenseView()
 }
