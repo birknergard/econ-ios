@@ -2,11 +2,12 @@ import Foundation
 import SwiftData
 
 @Model
-class Expense: Identifiable {
-    public var name: String
-    public var cost: Double
-    public var category: String
-    
+class EstimatedExpense: Identifiable {
+    @Attribute(.unique) var name: String
+    var cost: Double
+    var category: String
+    // TODO: Add dateCreated and dateLastModified
+
     init(name: String, cost: Double, category: String) {
         self.name = name
         self.cost = cost

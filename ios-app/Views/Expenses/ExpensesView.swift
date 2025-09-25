@@ -10,18 +10,15 @@ import SwiftData
 
 struct ExpensesView: View {
     @EnvironmentObject var store: EconStore
-    @Query var expenses: [Expense]
+    @Environment(\.dismiss) var dismiss
     
-    private var sum: Double {
-        expenses.reduce(0.0) {$0 + $1.cost}
-    }
-    
+    @Query var expenses: [EstimatedExpense]
     @State var creating: Bool = false
 
     var body: some View {
         VStack (spacing: 0){
-            VStack {
-                Text("Monthly sum of expenses")
+            VStack(alignment: .center, spacing: 0) {
+                Text("Monthly Expenses, estimated")
                     .font(.subheadline)
                     .foregroundColor(.textDark)
                 HStack {
@@ -29,7 +26,7 @@ struct ExpensesView: View {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 30, height: 30)
-                    Text(String(format: "%.0f,-", sum))
+                    Text(String(format: "%.0f NOK", expenses.reduce(0.0) {$0 + $1.cost}))
                         .font(.system(size: 50))
                 }
                 .foregroundColor(.accentRed)
@@ -38,8 +35,8 @@ struct ExpensesView: View {
             .padding(.bottom, 15)
             .overlay(
                 Rectangle()
-                    .frame(height: 2)
-                    .foregroundColor(.accentGreen),
+                    .frame(height: 0.2)
+                    .foregroundColor(.textDark),
                 alignment: .bottom
             )
 
@@ -47,18 +44,20 @@ struct ExpensesView: View {
                 CategoryList(expenses: expenses)
                 
                 // Add new
-                NavigationLink(destination: Creator()) {
+                Button(action: {
+                    creating = true
+                }) {
                     Image(systemName: "document.badge.plus")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 40, height: 40)
-                        .background(Circle().fill(Color.background))
+                        .background(Circle().fill(Color.white))
                         .foregroundColor(.red)
                 }
                 .buttonStyle(.plain)
                 .background(
                     Circle()
-                        .fill(Color.background)
+                        .fill(Color.white)
                         .frame(width: 65, height: 65)
                         .shadow(color: .gray.opacity(0.5), radius: 5)
                 )
@@ -68,11 +67,15 @@ struct ExpensesView: View {
                 maxWidth: .infinity,
                 maxHeight: .infinity,
             )
-        }
         .frame(
             maxWidth: .infinity,
             alignment: .top
         )
-        .background(Color.background)
+        .background(Color.white)
+        }.sheet(isPresented: $creating){
+           CreatorSheet()
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+        }
     }
 }

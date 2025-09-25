@@ -14,8 +14,8 @@ class EconStore: ObservableObject {
         "housing", "food", "transport", "other", "savings", "debt"
     ]
 
-    func mapExpensesToCategory(expenses: [Expense]) -> [String : [Expense]]{
-        var map: [String : [Expense]] = [:]
+    func mapExpensesToCategory(expenses: [EstimatedExpense]) -> [String : [EstimatedExpense]]{
+        var map: [String : [EstimatedExpense]] = [:]
         
         for expense in expenses {
             let category = expense.category
@@ -33,7 +33,7 @@ class EconStore: ObservableObject {
         return map
     }
     
-    func addExpense(expense: Expense) -> Bool {
+    func addExpense(expense: EstimatedExpense) -> Bool {
         do {
             context.insert(expense)
             try context.save()
@@ -41,5 +41,16 @@ class EconStore: ObservableObject {
         } catch {
             return false
         }
+    }
+    
+    func removeExpense(expense: EstimatedExpense) -> Bool {
+        do {
+            context.delete(expense)
+            try context.save()
+            return true
+        } catch {
+            return false
+        }
+
     }
 }

@@ -8,20 +8,37 @@
 import SwiftData
 import SwiftUI
 
-struct Creator: View {
+struct CreatorSheet: View {
     @EnvironmentObject var store: EconStore
-    @Environment(\.presentationMode) var presentationMode
-    
+    @Environment(\.dismiss) private var dismiss
+
     @State var name: String = ""
     @State var cost: Double = 0.00
     @State var category: String = "housing"
     @State var createdMessage: String?
 
-    func reset(){
-        name = "";
-        cost = 0;
+    func createExpense() {
+        let new = EstimatedExpense(
+            name: name,
+            cost: cost,
+            category: category
+        )
+
+        if store.addExpense(expense: new) {
+            createdMessage =
+                "Successfully created expense on category \(category)!"
+            reset()
+        } else {
+            createdMessage = "Failed to create expense!"
+        }
+
     }
     
+    func reset() {
+        name = ""
+        cost = 0
+    }
+
     var body: some View {
         VStack {
             Form {
@@ -57,26 +74,26 @@ struct Creator: View {
                 Section {
                     HStack(alignment: .center) {
                         Button(action: {
-                            let new = Expense(
-                                name: name,
-                                cost: cost,
-                                category: category
-                            )
-                            
-                            if store.addExpense(expense: new) {
-                                createdMessage = "Successfully created expense on category \(category)!"
-                                reset()
-                            } else {
-                                createdMessage = "Failed to create expense!"
-                            }
-                            
+                            createExpense()
                         }) {
                             HStack {
-                                Image(systemName: "plus.square.dashed")
+                                Image(systemName: "plus.square")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .frame(width: 30, height: 30)
                                 Text("CREATE")
+                            }
+                        }
+                        
+                        Button(action: {
+                            dismiss()
+                        }) {
+                            HStack {
+                                Image(systemName: "x.square")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 30, height: 30)
+                                Text("CANCEL")
                             }
                         }
                     }
@@ -84,13 +101,14 @@ struct Creator: View {
                     .foregroundColor(.red)
                     .padding()
                 }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .navigationTitle("Create new expense")
-            
-            if let message = createdMessage {
-                Text(message)
-                    .foregroundColor(message.contains("Failed") ? .red : .green)
+                .scrollContentBackground(.hidden)
+
+                if let message = createdMessage {
+                    Text(message)
+                        .foregroundColor(
+                            message.contains("Failed") ? .red : .green
+                        )
+                }
             }
         }
     }

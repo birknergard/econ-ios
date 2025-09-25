@@ -13,7 +13,7 @@ struct EconApp: App {
     var body: some Scene {
         WindowGroup {
             StoreHandler()
-        }.modelContainer(for: [Expense.self, Income.self])
+        }.modelContainer(for: [EstimatedExpense.self, Income.self])
     }
 }
 
