@@ -10,12 +10,7 @@ import SwiftData
 
 struct CategoryList: View {
     @EnvironmentObject private var store: EconStore
-
     var expenses: [Expense]
-    
-    init(expenses: [Expense]){
-        self.expenses = expenses
-    }
     
     private var sortedExpenses: [String: [Expense]] {
         store.mapExpensesToCategory(expenses: expenses)
@@ -35,12 +30,14 @@ struct CategoryList: View {
                     items: expensesForCategory,
                     categoryTotal: sum
                 )
-                .padding(.top, 5)
+                .padding([.top], 5)
+                .padding([.leading, .trailing], 10)
             }
             Rectangle()
                 .frame(height: 90)
                 .foregroundColor(.clear)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.accentLightGreen)
     }
 }

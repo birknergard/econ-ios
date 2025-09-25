@@ -4,6 +4,11 @@ import Combine
 class EconStore: ObservableObject {
     /* Service object, not in use right now */
     // let service: EconService = EconService()
+    var context: ModelContext
+    
+    init(context: ModelContext) {
+        self.context = context
+    }
     
     let categories: [String] = [
         "housing", "food", "transport", "other", "savings", "debt"
@@ -28,12 +33,12 @@ class EconStore: ObservableObject {
         return map
     }
     
-    func addExpense(expense: Expense, modelContext: ModelContext) -> Bool {
+    func addExpense(expense: Expense) -> Bool {
         do {
-            modelContext.insert(expense)
-            try modelContext.save()
+            context.insert(expense)
+            try context.save()
             return true
-        }  catch {
+        } catch {
             return false
         }
     }

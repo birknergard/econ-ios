@@ -10,12 +10,18 @@ import SwiftUI
 
 @main
 struct EconApp: App {
-    @StateObject private var store: EconStore = EconStore()
-
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environmentObject(store)
+            StoreHandler()
         }.modelContainer(for: [Expense.self, Income.self])
     }
 }
+
+struct StoreHandler: View {
+    @Environment(\.modelContext) var context
+    var body: some View {
+        ContentView()
+            .environmentObject(EconStore(context: context))
+    }
+}
+

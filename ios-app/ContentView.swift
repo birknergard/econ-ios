@@ -35,5 +35,7 @@ struct ContentView: View {
             }
         }
         .tint(.accentGreen)
+        .toolbarBackground(Color.accentPeach, for: .tabBar)
+        .toolbarBackground(.visible, for: .tabBar)
     }
 }

@@ -11,12 +11,7 @@ import SwiftUI
 struct Creator: View {
     @EnvironmentObject var store: EconStore
     @Environment(\.presentationMode) var presentationMode
-    var context: ModelContext
     
-    init(context: ModelContext){
-        self.context = context
-    }
-
     @State var name: String = ""
     @State var cost: Double = 0.00
     @State var category: String = "housing"
@@ -67,12 +62,11 @@ struct Creator: View {
                                 cost: cost,
                                 category: category
                             )
-                            context.insert(new)
-                            do {
-                                try context.save()
+                            
+                            if store.addExpense(expense: new) {
                                 createdMessage = "Successfully created expense on category \(category)!"
                                 reset()
-                            } catch {
+                            } else {
                                 createdMessage = "Failed to create expense!"
                             }
                             

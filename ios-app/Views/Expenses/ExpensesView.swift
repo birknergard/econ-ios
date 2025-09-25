@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct ExpensesView: View {
-    @Environment(\.modelContext) var context
+    @EnvironmentObject var store: EconStore
     @Query var expenses: [Expense]
     
     private var sum: Double {
@@ -23,12 +23,13 @@ struct ExpensesView: View {
             VStack {
                 Text("Monthly sum of expenses")
                     .font(.subheadline)
+                    .foregroundColor(.textDark)
                 HStack {
                     Image(systemName: "minus")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 30, height: 30)
-                    Text(String(format: "%d,-", sum))
+                    Text(String(format: "%.0f,-", sum))
                         .font(.system(size: 50))
                 }
                 .foregroundColor(.accentRed)
@@ -38,7 +39,7 @@ struct ExpensesView: View {
             .overlay(
                 Rectangle()
                     .frame(height: 2)
-                    .foregroundColor(.textDark),
+                    .foregroundColor(.accentGreen),
                 alignment: .bottom
             )
 
@@ -46,7 +47,7 @@ struct ExpensesView: View {
                 CategoryList(expenses: expenses)
                 
                 // Add new
-                NavigationLink(destination: Creator(context: context)) {
+                NavigationLink(destination: Creator()) {
                     Image(systemName: "document.badge.plus")
                         .resizable()
                         .aspectRatio(contentMode: .fit)

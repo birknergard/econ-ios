@@ -7,55 +7,81 @@
 
 import SwiftUI
 
+private let roundedRadius: CGFloat = 25
+
 struct CategoryTable: View {
     var title: String = "Unknown"
     var items: [Expense] = []
-    var borderColor: Color = .gray
     var categoryTotal: Double = 0  // Test value
 
-    @State var isListView: Bool = false;
-    
+    @State var isListView: Bool = false
+
     var body: some View {
-        HStack {
-            VStack(alignment: .leading) {
-                Text("\(title)").font(.title)
+        VStack(spacing: 0) {
+            HStack {
+                VStack(alignment: .leading) {
+                    Text("\(title)").font(.title)
 
-                (items.isEmpty || categoryTotal <= 0
-                    ? Text("Category is empty.")
-                    : Text("Contains \(items.count) entries."))
-                    .font(.caption)
-            }
+                    (items.isEmpty || categoryTotal <= 0
+                        ? Text("Category is empty.")
+                        : Text("Contains \(items.count) entries."))
+                        .font(.caption)
+                }
 
-            Spacer()
+                Spacer()
 
-            (items.isEmpty
-                ? Text("0,-")
-                : Text(String(format: "%d,-", categoryTotal)))
-                .font(.title)
+                (items.isEmpty
+                    ? Text("0,-")
+                    : Text(String(format: "%.0f,-", categoryTotal)))
+                    .font(.title)
 
-            Button(action: {
-                // Modal active/deactivate
-            }) {
-                Image(systemName: "chevron.down")
+                Image(systemName: isListView ? "chevron.up" : "chevron.down")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 15, height: 15)
                     .padding(.leading, 10)
             }
-            .buttonStyle(.plain)
-
+            .padding([.leading, .trailing], 20)
+            .padding(.top, isListView ? 15 : 30)
+            .padding(.bottom, isListView ? 15 : 30)
+            .clipShape(!isListView
+                       ? AnyShape(RoundedRectangle(cornerRadius: roundedRadius))
+                       : AnyShape(Rectangle()))
+            .foregroundColor(.white)
+            
+            if isListView {
+                ExpenseList(expenses: items)
+                    .padding([.leading, .trailing, .bottom], 3)
+            }
         }
-        .font(.title2)
-        .padding([.leading, .trailing], 20)
-        .padding([.bottom, .top], 50)
-        .foregroundColor(.white)
-        .background(Color.accentRed)
-        .cornerRadius(8)
+        .background(isListView ? Color.accentLightRed : Color.accentRed)
+        .clipShape(RoundedRectangle(cornerRadius: roundedRadius))
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding([.leading, .trailing], 10)
         .onTapGesture {
-            isListView.toggle()
+            withAnimation(.easeInOut(duration: 0.2)){
+                isListView.toggle()
+            }
         }
+    }
+}
+
+struct ExpenseList: View {
+    var expenses: [Expense]
+    var body: some View {
+        VStack {
+            ForEach(expenses, id: \.self) { expense in
+                VStack(alignment: .leading) {
+                    Text(expense.name).font(.headline.bold())
+                    Text(String(format: "%.2f,-", expense.cost)).font(.title3)
+                }
+            }
+        }
+        .padding([.leading, .trailing], 10)
+        .padding([.top, .bottom], 20)
+        .frame(maxWidth: .infinity, alignment: .bottom)
+        .background(Color.background)
+        .foregroundColor(.textDark)
+        .clipShape(RoundedRectangle(cornerRadius: roundedRadius))
     }
 }
 
