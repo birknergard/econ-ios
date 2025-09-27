@@ -41,7 +41,7 @@ struct ExpensesView: View {
             )
 
             ZStack(alignment: .bottomTrailing) {
-                CategoryList(expenses: expenses)
+                CategoryList(expenses: expenses, toggleCreateSheet: $creating)
                 
                 // Add new
                 Button(action: {

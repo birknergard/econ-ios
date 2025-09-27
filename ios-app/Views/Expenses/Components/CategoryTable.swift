@@ -8,17 +8,18 @@
 import SwiftUI
 
 struct CategoryTable: View {
-    var title: String = "Unknown"
+    var category: String = "unknown"
     var items: [EstimatedExpense] = []
     var categoryTotal: Double = 0  // Test value
 
-    @State var isListView: Bool = false
+    @State private var toggleCreateSheet: Bool = false
+    @State private var isListView: Bool = false
 
     var body: some View {
         VStack(spacing: 0) {
             HStack {
                 VStack(alignment: .leading) {
-                    Text("\(title.capitalized)").font(.title)
+                    Text("\(category.capitalized)").font(.title)
 
                     if items.isEmpty || categoryTotal <= 0 {
                         Text("Category is empty.")
@@ -44,6 +45,20 @@ struct CategoryTable: View {
                     .frame(width: 15, height: 15)
                     .padding(.leading, 10)
 
+                } else {
+                    Button(action: {
+                        toggleCreateSheet.toggle()
+                    }) {
+                        Image(systemName: "plus.circle.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 40, height: 40)
+                            .background(
+                                Circle()
+                                    .foregroundColor(.accentLightRed)
+                            )
+                            .padding(.leading, 10)
+                    }
                 }
             }
             .padding([.leading, .trailing], 20)
@@ -71,5 +86,15 @@ struct CategoryTable: View {
         .background(isListView ? Color.accentLightRed : Color.accentRed)
         .clipShape(RoundedRectangle(cornerRadius: roundedRadius))
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .onChange(of: items) {
+            if items.isEmpty {
+                isListView = false
+            }
+        }
+        .sheet(isPresented: $toggleCreateSheet) {
+            CreatorSheet(category: self.category)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+        }
     }
 }

@@ -12,6 +12,9 @@ struct CategoryList: View {
     @EnvironmentObject private var store: EconStore
     var expenses: [EstimatedExpense]
     
+    @State var selectedExpense: EstimatedExpense? = nil
+    @Binding var toggleCreateSheet: Bool
+    
     private var sortedExpenses: [String: [EstimatedExpense]] {
         store.mapExpensesToCategory(expenses: expenses)
     }
@@ -26,7 +29,7 @@ struct CategoryList: View {
                 let sum = expensesForCategory.reduce(0.0) { $0 + $1.cost }
 
                 CategoryTable(
-                    title: category,
+                    category: category,
                     items: expensesForCategory,
                     categoryTotal: sum
                 )

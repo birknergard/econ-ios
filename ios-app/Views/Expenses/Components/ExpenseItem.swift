@@ -11,7 +11,10 @@ struct ExpenseItem: View {
     @EnvironmentObject private var store: EconStore
     var expense: EstimatedExpense
 
-    @State var editing: Bool = false
+    @State private var editing = false
+    @State private var toggleEditSheet = false
+    @State private var deleting = false
+
     var body: some View {
         VStack(spacing: 0) {
             HStack {
@@ -22,8 +25,10 @@ struct ExpenseItem: View {
                     .aspectRatio(contentMode: .fit)
                     .foregroundColor(.white)
                     .frame(width: 13, height: 13)
-                Text(String(format: "%.0f NOK", expense.cost)).font(.system(size: 16))
-                    .foregroundColor(.white)
+                Text(String(format: "%.0f NOK", expense.cost)).font(
+                    .system(size: 16)
+                )
+                .foregroundColor(.white)
                 Spacer()
                 if !editing {
                     Image(systemName: "chevron.down")
@@ -45,6 +50,9 @@ struct ExpenseItem: View {
                         .padding([.top, .bottom], 10)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(Color.gray)
+                        .onTapGesture {
+                            toggleEditSheet.toggle()
+                        }
 
                     Image(systemName: "xmark.bin.fill")
                         .resizable()
@@ -52,7 +60,7 @@ struct ExpenseItem: View {
                         .frame(width: 35, height: 35)
                         .padding([.top, .bottom], 10)
                         .onTapGesture {
-                            store.removeExpense(expense: self.expense)
+                            deleting.toggle()
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(Color.textDark)
@@ -62,13 +70,37 @@ struct ExpenseItem: View {
         }
         .frame(maxWidth: .infinity)
         .background(Color.accentGreen)
-        .clipShape(RoundedRectangle(cornerRadius: roundedRadius, style: .circular))
+        .clipShape(
+            RoundedRectangle(cornerRadius: roundedRadius, style: .circular)
+        )
         .shadow(radius: 2)
         .contentShape(Rectangle())
         .onTapGesture {
-            withAnimation(.easeInOut(duration: 0.2)){
+            withAnimation(.easeInOut(duration: 0.2)) {
                 editing.toggle()
             }
         }
+        .sheet(isPresented: $toggleEditSheet) {
+            CreatorSheet(
+                name: self.expense.name,
+                cost: self.expense.cost,
+                category: self.expense.category
+            )
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
+        }
+        .alert(
+            "Are you sure you want to delete \(expense.name.capitalized) entry?",
+            isPresented: $deleting
+        ){
+            Button("Cancel", role: .cancel){
+                print("Deleted \(expense.name) entry")
+            }
+            Button("Confirm", role: .destructive){
+                store.removeExpense(expense: self.expense)
+                print("Deleted \(expense.name) entry")
+            }
+        }
+
     }
 }
