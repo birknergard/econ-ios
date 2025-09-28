@@ -93,7 +93,7 @@ struct CategoryTable: View {
         }
         .sheet(isPresented: $toggleCreateSheet) {
             CreatorSheet(category: self.category)
-                .presentationDetents([.medium, .large])
+                .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
         }
     }

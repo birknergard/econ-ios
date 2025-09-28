@@ -43,6 +43,20 @@ class EconStore: ObservableObject {
         }
     }
     
+    func editExpense(oldExpense: EstimatedExpense, newExpense: EstimatedExpense) -> Bool {
+        do {
+            if oldExpense.name != newExpense.name {
+                context.delete(oldExpense)
+            }
+            context.insert(newExpense)
+            try context.save()
+            return true
+        } catch {
+            return false
+        }
+    }
+
+    
     func removeExpense(expense: EstimatedExpense) -> Bool {
         do {
             context.delete(expense)

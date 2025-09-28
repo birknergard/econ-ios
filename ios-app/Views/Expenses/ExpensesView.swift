@@ -74,7 +74,7 @@ struct ExpensesView: View {
         .background(Color.white)
         }.sheet(isPresented: $creating){
            CreatorSheet()
-                .presentationDetents([.medium, .large])
+                .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
         }
     }

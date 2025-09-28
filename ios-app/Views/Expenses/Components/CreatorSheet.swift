@@ -11,6 +11,10 @@ import SwiftUI
 struct CreatorSheet: View {
     @EnvironmentObject var store: EconStore
     @Environment(\.dismiss) private var dismiss
+    
+    var isEditing : Bool = false
+    
+    var oldExpense: EstimatedExpense? = nil
 
     @State var name: String = ""
     @State var cost: Double = 0.00
@@ -31,7 +35,21 @@ struct CreatorSheet: View {
         } else {
             createdMessage = "Failed to create expense!"
         }
-
+    }
+    
+    func editExpense() {
+        let new = EstimatedExpense(
+            name: name.lowercased(),
+            cost: cost,
+            category: category
+        )
+        if store.editExpense(oldExpense: oldExpense!, newExpense: new) {
+            createdMessage =
+                "Successfully edited expense!"
+            reset()
+        } else {
+            createdMessage = "Failed to create expense!"
+        }
     }
     
     func reset() {
@@ -73,17 +91,30 @@ struct CreatorSheet: View {
 
                 Section {
                     HStack(alignment: .center) {
+                        Spacer()
+                        
                         Button(action: {
-                            createExpense()
+                            isEditing ? editExpense() : createExpense()
                         }) {
                             HStack {
-                                Image(systemName: "plus.square")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 30, height: 30)
-                                Text("CREATE")
+                                if isEditing {
+                                    Image(systemName: "square.and.arrow.down")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 30, height: 30)
+                                    Text("SAVE")
+                                } else {
+                                    Image(systemName: "plus.square")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 30, height: 30)
+                                    Text("CREATE")
+                                }
                             }
                         }
+                        .foregroundColor(.green)
+
+                        Spacer()
                         
                         Button(action: {
                             dismiss()
@@ -96,9 +127,11 @@ struct CreatorSheet: View {
                                 Text("CANCEL")
                             }
                         }
+                        .foregroundColor(.textDark)
+
+                        Spacer()
                     }
                     .frame(maxWidth: .infinity)
-                    .foregroundColor(.red)
                     .padding()
                 }
                 .scrollContentBackground(.hidden)

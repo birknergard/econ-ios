@@ -18,7 +18,7 @@ struct ExpenseItem: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Text("\(expense.name)").font(.system(size: 16))
+                Text("\(expense.name.capitalized)").font(.system(size: 16))
                     .foregroundColor(.white)
                 Image(systemName: "arrow.right")
                     .resizable()
@@ -82,11 +82,13 @@ struct ExpenseItem: View {
         }
         .sheet(isPresented: $toggleEditSheet) {
             CreatorSheet(
-                name: self.expense.name,
+                isEditing: true,
+                oldExpense: expense,
+                name: self.expense.name.capitalized,
                 cost: self.expense.cost,
                 category: self.expense.category
             )
-            .presentationDetents([.medium, .large])
+            .presentationDetents([.large])
             .presentationDragIndicator(.visible)
         }
         .alert(
