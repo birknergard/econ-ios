@@ -10,9 +10,7 @@ class EconStore: ObservableObject {
         self.context = context
     }
     
-    let categories: [String] = [
-        "housing", "food", "transport", "other", "savings", "debt"
-    ]
+    let categories: [String] = Category.allCases.map { $0.rawValue }
 
     func mapExpensesToCategory(expenses: [EstimatedExpense]) -> [String : [EstimatedExpense]]{
         var map: [String : [EstimatedExpense]] = [:]
@@ -33,9 +31,9 @@ class EconStore: ObservableObject {
         return map
     }
     
-    func addExpense(expense: EstimatedExpense) -> Bool {
+    func add(new: any PersistentModel) -> Bool {
         do {
-            context.insert(expense)
+            context.insert(new)
             try context.save()
             return true
         } catch {
@@ -43,12 +41,12 @@ class EconStore: ObservableObject {
         }
     }
     
-    func editExpense(oldExpense: EstimatedExpense, newExpense: EstimatedExpense) -> Bool {
+    func edit(old: any PersistentModel, new: any PersistentModel) -> Bool {
         do {
-            if oldExpense.name != newExpense.name {
-                context.delete(oldExpense)
+            if old.id != new.id {
+                context.delete(old)
             }
-            context.insert(newExpense)
+            context.insert(new)
             try context.save()
             return true
         } catch {
@@ -57,9 +55,9 @@ class EconStore: ObservableObject {
     }
 
     
-    func removeExpense(expense: EstimatedExpense) -> Bool {
+    func remove(object: any PersistentModel) -> Bool {
         do {
-            context.delete(expense)
+            context.delete(object)
             try context.save()
             return true
         } catch {

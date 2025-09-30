@@ -3,14 +3,13 @@ import SwiftData
 
 @Model
 class EstimatedExpense: Identifiable {
-    @Attribute(.unique) var name: String
-    var cost: Double
+    var name: String
+    var amount: Double
     var category: String
-    // TODO: Add dateCreated and dateLastModified
 
-    init(name: String, cost: Double, category: String) {
+    init(name: String, amount: Double, category: String) {
         self.name = name
-        self.cost = cost
+        self.amount = amount
         self.category = category
     }
 }

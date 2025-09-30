@@ -1,29 +1,71 @@
 //
-//  ExpenseCreator.swift
+//  CreationSheet.swift
 //  ios-app
 //
-//  Created by Birk Kristinius Nergård on 22/09/2025.
+//  Created by Birk Kristinius Nergård on 29/09/2025.
 //
 
-import SwiftData
 import SwiftUI
 
-struct CreatorSheet: View {
-    @EnvironmentObject var store: EconStore
-    @Environment(\.dismiss) private var dismiss
-    
-    var isEditing : Bool = false
-    
-    var oldExpense: EstimatedExpense? = nil
+struct IncomeSheet: View {
 
-    @State var name: String = ""
-    @State var cost: Double = 0.00
-    @State var category: String = "housing"
-    @State var createdMessage: String?
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var store: EconStore
+
+    var start: Income?
+    @State private var name: String
+    @State private var amount: Double
+
+    @State private var createdMessage: String?
+
+    init(start: Income) {
+        self.start = start
+        _name = State(initialValue: start.name)
+        _amount = State(initialValue: start.amount)
+    }
+
+    init() {
+        self.start = nil
+        _name = State(initialValue: "")
+        _amount = State(initialValue: 0)
+    }
+
+    func getVerifiedIncome() -> Income? {
+        if name.isEmpty {
+            print("invalid name")
+            return nil
+        }
+        if amount <= 0 {
+            print("invalid cost")
+            return nil
+        }
+
+        return Income(
+            name: name,
+            amount: amount,
+        )
+    }
+
+    func addIncome() {
+        let new = getVerifiedIncome()
+        if new != nil {
+            store.add(new: new!)
+        }
+        reset()
+    }
+
+    func editIncome() {
+        if start == nil { return }
+        let new = getVerifiedIncome()
+        if new != nil {
+            store.edit(old: start!, new: new!)
+        }
+        dismiss()
+    }
 
     func reset() {
         name = ""
-        cost = 0
+        amount = 0.00
     }
 
     var body: some View {
@@ -34,37 +76,25 @@ struct CreatorSheet: View {
                         .keyboardType(.alphabet)
                 }
 
-                Section(header: Text("Cost (Monthly)")) {
+                Section(header: Text("Amount (NOK)")) {
                     TextField(
                         "0,00",
-                        value: $cost,
+                        value: $amount,
                         formatter: NumberFormatter()
                     )
                     .keyboardType(.decimalPad)
                     .multilineTextAlignment(.trailing)
                 }
 
-                Section(header: Text("Category")) {
-                    Picker(
-                        "Select a Category",
-                        selection: $category
-                    ) {
-                        ForEach(store.categories, id: \.self) { category in
-                            Text(category)
-                        }
-                    }
-                    .pickerStyle(.wheel).font(.title2)
-                    .labelsHidden()  // Hides the label to reduce padding
-                    .frame(maxWidth: .infinity, maxHeight: 100)
-                }
-
                 Section {
                     HStack(alignment: .center) {
                         Spacer()
-                        
-                        Button(action: {}) {
+
+                        Button(action: {
+                            start != nil ? editIncome() : addIncome()
+                        }) {
                             HStack {
-                                if isEditing {
+                                if start != nil {
                                     Image(systemName: "square.and.arrow.down")
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
@@ -82,7 +112,7 @@ struct CreatorSheet: View {
                         .foregroundColor(.green)
 
                         Spacer()
-                        
+
                         Button(action: {
                             dismiss()
                         }) {
@@ -95,10 +125,19 @@ struct CreatorSheet: View {
                             }
                         }
                         .foregroundColor(.textDark)
+
                         Spacer()
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
+                }
+                .scrollContentBackground(.hidden)
+
+                if let message = createdMessage {
+                    Text(message)
+                        .foregroundColor(
+                            message.contains("Failed") ? .red : .green
+                        )
                 }
             }
         }

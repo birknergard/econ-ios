@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct CategoryTable: View {
+    @EnvironmentObject private var store: EconStore
+    
     var category: String = "unknown"
     var items: [EstimatedExpense] = []
     var categoryTotal: Double = 0  // Test value
@@ -20,7 +22,6 @@ struct CategoryTable: View {
             HStack {
                 VStack(alignment: .leading) {
                     Text("\(category.capitalized)").font(.title)
-
                     if items.isEmpty || categoryTotal <= 0 {
                         Text("Category is empty.")
                     } else if !items.isEmpty && !isListView {
@@ -92,9 +93,11 @@ struct CategoryTable: View {
             }
         }
         .sheet(isPresented: $toggleCreateSheet) {
-            CreatorSheet(category: self.category)
-                .presentationDetents([.large])
-                .presentationDragIndicator(.visible)
+            ExpenseSheet(
+                forCategory: self.category
+            )
+            .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
         }
     }
 }

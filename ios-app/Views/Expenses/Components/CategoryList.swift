@@ -18,18 +18,19 @@ struct CategoryList: View {
     private var sortedExpenses: [String: [EstimatedExpense]] {
         store.mapExpensesToCategory(expenses: expenses)
     }
+    private let categories = Category.allCases
 
     var body: some View {
         ScrollView {
             Rectangle()
                 .frame(height: 5)
                 .foregroundColor(.clear)
-            ForEach(store.categories, id: \.self) { category in
-                let expensesForCategory = sortedExpenses[category] ?? []
-                let sum = expensesForCategory.reduce(0.0) { $0 + $1.cost }
+            ForEach(categories, id: \.self) { category in
+                let expensesForCategory = sortedExpenses[category.rawValue] ?? []
+                let sum = expensesForCategory.reduce(0.0) { $0 + $1.amount }
 
                 CategoryTable(
-                    category: category,
+                    category: category.rawValue,
                     items: expensesForCategory,
                     categoryTotal: sum
                 )

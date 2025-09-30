@@ -1,11 +1,11 @@
 import Foundation
 import SwiftData
 
+// TODO: Add dateCreated and dateLastModified
 @Model
 class Income: Identifiable {
     var name: String
     var amount: Double
-    // TODO: Add dateCreated and dateLastModified
     
     init(name: String, amount: Double) {
         self.name = name

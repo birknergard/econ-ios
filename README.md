@@ -1,5 +1,5 @@
-# Personal Economy Manager, iOS version
-This app aims to be a barebones and simple way of keeping track of your personal finances on a monthly basis. 
+# Personal Economy Manager, iOS 
+This app aims to simplify keeping track of your personal finances on a monthly basis. 
 
 ## Features in Progress
 * Create estimated monthly expenses
