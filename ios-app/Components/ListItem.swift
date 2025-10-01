@@ -21,6 +21,7 @@ struct ListItem: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
+                Spacer()
                 Text("\(name.capitalized)").font(.system(size: large ? 24 : 16))
                 Image(systemName: "arrow.right")
                     .resizable()
