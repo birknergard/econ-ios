@@ -15,19 +15,19 @@ struct ListItem: View {
     var onEdit: () -> Void
     var color: Color = .black
     var large = false
-    
+
     @State private var isOpen = false
 
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Text("\(name.capitalized)").font(.system(size: 16))
+                Text("\(name.capitalized)").font(.system(size: large ? 24 : 16))
                 Image(systemName: "arrow.right")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 13, height: 13)
+                    .frame(width: large ? 16 : 13, height: large ? 16 : 13)
                 Text(String(format: "%.0f NOK", amount))
-                    .font(.system(size: 16))
+                    .font(.system(size: large ? 24 : 16 ))
                 Spacer()
                 if !isOpen {
                     Image(systemName: "chevron.down")
@@ -37,8 +37,14 @@ struct ListItem: View {
                 }
             }
             .foregroundColor(.white)
-            .padding([.top, .bottom], 10)
-            .padding([.leading, .trailing], 20)
+            .padding([.top, .bottom], large ? 20 : 10)
+            .padding([.leading, .trailing], large ? 20 : 10)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isOpen.toggle()
+                }
+            }
 
             if isOpen {
                 HStack(spacing: 0) {
@@ -58,11 +64,11 @@ struct ListItem: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 35, height: 35)
                         .padding([.top, .bottom], 10)
+                        .frame(maxWidth: .infinity)
+                        .background(Color.textDark)
                         .onTapGesture {
                             onDelete()
                         }
-                        .frame(maxWidth: .infinity)
-                        .background(Color.textDark)
                 }
                 .foregroundColor(.white)
             }
@@ -73,11 +79,5 @@ struct ListItem: View {
             RoundedRectangle(cornerRadius: roundedRadius, style: .circular)
         )
         .shadow(radius: 2)
-        .contentShape(Rectangle())
-        .onTapGesture {
-            withAnimation(.easeInOut(duration: 0.2)) {
-                isOpen.toggle()
-            }
-        }
     }
 }

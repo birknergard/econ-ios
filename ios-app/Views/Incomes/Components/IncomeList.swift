@@ -10,11 +10,15 @@ import SwiftUI
 struct IncomeList: View {
     @EnvironmentObject private var store: EconStore
     let incomes: [Income]
+
+    private let gap: CGFloat = 15
     var body: some View {
-        VStack {
+        VStack(spacing: gap) {
             ForEach(incomes, id: \.self) { income in
-                ListItem(name: income.name, amount: income.amount, onDelete: { }, onEdit: { })
+                IncomeItem(income: income)
             }
         }
+        .padding(.top, gap)
+        .padding([.leading, .trailing], 8)
     }
 }
